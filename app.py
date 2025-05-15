@@ -1,10 +1,12 @@
 import os
+import boto3
+from botocore.exceptions import ClientError
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from dotenv import load_dotenv
 
@@ -22,6 +24,26 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+
+# S3 Configuration
+app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET', 'your-bucket-name')
+app.config['S3_REGION'] = os.environ.get('S3_REGION', 'us-east-1')
+app.config['S3_URL_EXPIRATION'] = int(os.environ.get('S3_URL_EXPIRATION', 3600))  # 1 hour
+
+# Initialize S3 client - uses IAM role credentials automatically when deployed
+s3_client = boto3.client('s3', region_name=app.config['S3_REGION'])
+
+# Function to generate pre-signed URL for S3 objects
+def get_presigned_url(object_name, expiration=3600):
+    try:
+        response = s3_client.generate_presigned_url('get_object',
+                                                   Params={'Bucket': app.config['S3_BUCKET'],
+                                                           'Key': object_name},
+                                                   ExpiresIn=expiration)
+    except ClientError as e:
+        print(f"Error generating presigned URL: {e}")
+        return None
+    return response
 
 # Ensure upload directory exists with absolute path
 current_dir = os.path.abspath(os.path.dirname(__file__))
@@ -73,13 +95,17 @@ image_tags = db.Table('image_tags',
 class Image(db.Model):
     __tablename__ = 'images'  # Explicitly set table name
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)  # S3 object key
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     tags = db.relationship('Tag', secondary=image_tags, lazy='subquery',
                            backref=db.backref('images', lazy=True))
+    
+    def get_url(self):
+        """Generate a pre-signed URL for the image"""
+        return get_presigned_url(self.filename, app.config['S3_URL_EXPIRATION'])
 
 class Tag(db.Model):
     __tablename__ = 'tags'  # Explicitly set table name
@@ -210,18 +236,18 @@ def upload():
             extension = original_filename.rsplit('.', 1)[1].lower()
             unique_filename = f"{uuid.uuid4().hex}.{extension}"
             
-            # Get absolute path to upload directory
-            current_dir = os.path.abspath(os.path.dirname(__file__))
-            uploads_dir = os.path.join(current_dir, 'static', 'uploads')
-            os.makedirs(uploads_dir, exist_ok=True)
-            
-            # Save file with absolute path
-            file_path = os.path.join(uploads_dir, unique_filename)
-            file.save(file_path)
-            
-            # Verify file was saved
-            if not os.path.exists(file_path):
-                raise Exception("Failed to save image file")
+            # Upload file to S3
+            try:
+                s3_client.upload_fileobj(
+                    file,
+                    app.config['S3_BUCKET'],
+                    unique_filename,
+                    ExtraArgs={
+                        'ContentType': file.content_type
+                    }
+                )
+            except ClientError as e:
+                raise Exception(f"S3 upload failed: {str(e)}")
             
             # Get form data
             title = request.form.get('title')
@@ -234,7 +260,7 @@ def upload():
             
             # Create new image record
             new_image = Image(
-                filename=unique_filename,
+                filename=unique_filename,  # Store S3 object key
                 title=title,
                 description=description,
                 user_id=current_user.id
@@ -304,3 +330,4 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, use_reloader=False)
+    

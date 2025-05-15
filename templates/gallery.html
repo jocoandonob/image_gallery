@@ -21,7 +21,7 @@
     {% if images %}
         {% for image in images %}
             <div class="gallery-item">
-                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.title }}" class="gallery-image">
+                <img src="{{ image.get_url() }}" alt="{{ image.title }}" class="gallery-image">
                 <div class="gallery-info">
                     <h3 class="gallery-title">{{ image.title }}</h3>
                     <p class="gallery-description">{{ image.description }}</p>
