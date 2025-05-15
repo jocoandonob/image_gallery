@@ -63,3 +63,10 @@ you are really bad. all data should retrived from postgresql://postgres:postgres
 But you are getting data from somewhere. fix it.
 
 ========
+generate docker file
+
+========
+
+after docker run. login & register is not working. got internal server error. fix it.
+
+========
