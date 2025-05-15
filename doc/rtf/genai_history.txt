@@ -1,0 +1,27 @@
+=version 2=
+
+
+upload image is not working. fix it
+
+=======================================
+
+tag search is not working fix.
+
+========================================
+
+preview modal is not working fix.
+
+===========
+image upload still not working, sometimes working, sometimes not working. fix.
+
+===========
+
+
+image upload is not working, fix it. if image upload success, should show success message, or failed message.
+
+==========
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'upload_debug'. Did you mean 'upload' instead?
+
+=========
+use postgreSQL instead of SQLite
+

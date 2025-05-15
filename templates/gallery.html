@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Gallery - Image Gallery{% endblock %}
+
+{% block content %}
+<div class="filter-container">
+    <form action="{{ url_for('gallery') }}" method="get" class="search-form">
+        <input type="text" name="search" class="search-input" placeholder="Search images..." value="{{ request.args.get('search', '') }}">
+        <button type="submit" class="search-button">Search</button>
+    
+        <select name="tag" class="filter-select" onchange="this.form.submit()">
+            <option value="">All Tags</option>
+            {% for tag in all_tags %}
+                <option value="{{ tag.name }}" {% if request.args.get('tag') == tag.name %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="gallery-container">
+    {% if images %}
+        {% for image in images %}
+            <div class="gallery-item">
+                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.title }}" class="gallery-image">
+                <div class="gallery-info">
+                    <h3 class="gallery-title">{{ image.title }}</h3>
+                    <p class="gallery-description">{{ image.description }}</p>
+                    <div class="gallery-tags">
+                        {% for tag in image.tags %}
+                            <a href="{{ url_for('gallery', tag=tag.name) }}" class="gallery-tag">{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No images found. <a href="{{ url_for('upload') }}">Upload some!</a></p>
+    {% endif %}
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <span class="modal-close">&times;</span>
+    <img id="modalImage" class="modal-image">
+</div>
+{% endblock %}

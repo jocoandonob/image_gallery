@@ -1,0 +1,18 @@
+.upload-preview {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 1rem;
+    display: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}

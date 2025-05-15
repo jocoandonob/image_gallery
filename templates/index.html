@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container" style="text-align: center;">
+    <h1 class="form-title">Welcome to Image Gallery</h1>
+    <p style="margin-bottom: 2rem;">A place to store and share your favorite images</p>
+    
+    <div style="display: flex; justify-content: center; gap: 1rem;">
+        <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary" style="background-color: #2ecc71;">Register</a>
+    </div>
+    
+    <div style="margin-top: 2rem; text-align: center;">
+        <form action="{{ url_for('login') }}" method="post">
+            <input type="hidden" name="username" value="admin">
+            <input type="hidden" name="password" value="admin">
+            <button type="submit" class="btn" style="background-color: #95a5a6;">Quick Admin Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

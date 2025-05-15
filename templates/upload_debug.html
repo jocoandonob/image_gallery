@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Debug - Image Gallery{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Upload Debug</h2>
+    
+    <h3>Environment Information</h3>
+    <ul>
+        <li>Upload folder: {{ upload_folder }}</li>
+        <li>Upload folder exists: {{ upload_folder_exists }}</li>
+        <li>Upload folder is writable: {{ upload_folder_writable }}</li>
+        <li>Allowed extensions: {{ allowed_extensions }}</li>
+    </ul>
+    
+    <h3>Test Upload</h3>
+    <form method="POST" action="{{ url_for('upload_debug') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="image" class="form-label">Select Image</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Test Upload</button>
+    </form>
+    
+    {% if test_result %}
+    <div class="test-result">
+        <h3>Test Result</h3>
+        <pre>{{ test_result }}</pre>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('upload') }}" class="btn btn-secondary">Back to Upload</a>
+    </div>
+</div>
+{% endblock %}
