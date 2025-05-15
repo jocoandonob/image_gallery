@@ -47,3 +47,19 @@ password: postgres
 move everything from SQLite to PostgreSQL.
 all data should store in PostgreSQL includes user, tags, images
 And remove SQLite.
+
+
+========
+
+still something not working. old created files remained. everything should be real working with postgreSQL database.
+
+there are no users in database user table. but login is working . this is wrong. fix.
+
+
+========
+
+you are really bad. all data should retrived from postgresql://postgres:postgres@localhost:5432/postgres.
+
+But you are getting data from somewhere. fix it.
+
+========
