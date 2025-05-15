@@ -70,3 +70,7 @@ generate docker file
 after docker run. login & register is not working. got internal server error. fix it.
 
 ========
+
+Error uploading image: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "image_tags_pkey" DETAIL: Key (image_id, tag_id)=(1, 1) already exists. [SQL: INSERT INTO image_tags (image_id, tag_id) VALUES (%(image_id)s, %(tag_id)s)] [parameters: {'image_id': 1, 'tag_id': 1}] (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+========

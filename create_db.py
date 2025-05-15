@@ -20,35 +20,35 @@ def create_database():
         # Create tables if they don't exist
         print("Creating tables if they don't exist...")
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS "user" (
+        CREATE TABLE IF NOT EXISTS "users" (
             id SERIAL PRIMARY KEY,
             username VARCHAR(80) UNIQUE NOT NULL,
-            password_hash VARCHAR(128) NOT NULL
+            password_hash VARCHAR(255) NOT NULL
         );
         """)
         
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS tag (
+        CREATE TABLE IF NOT EXISTS "tags" (
             id SERIAL PRIMARY KEY,
             name VARCHAR(50) UNIQUE NOT NULL
         );
         """)
         
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS image (
+        CREATE TABLE IF NOT EXISTS "images" (
             id SERIAL PRIMARY KEY,
             filename VARCHAR(255) NOT NULL,
             title VARCHAR(100) NOT NULL,
             description TEXT,
             upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            user_id INTEGER REFERENCES "user"(id) NOT NULL
+            user_id INTEGER REFERENCES "users"(id) NOT NULL
         );
         """)
         
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS image_tags (
-            image_id INTEGER REFERENCES image(id) ON DELETE CASCADE,
-            tag_id INTEGER REFERENCES tag(id) ON DELETE CASCADE,
+        CREATE TABLE IF NOT EXISTS "image_tags" (
+            image_id INTEGER REFERENCES "images"(id) ON DELETE CASCADE,
+            tag_id INTEGER REFERENCES "tags"(id) ON DELETE CASCADE,
             PRIMARY KEY (image_id, tag_id)
         );
         """)

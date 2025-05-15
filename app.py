@@ -240,7 +240,11 @@ def upload():
                 user_id=current_user.id
             )
             
-            # Process tags
+            # Add and commit the image first to get an ID
+            db.session.add(new_image)
+            db.session.commit()
+            
+            # Now process tags
             for tag_name in tag_names:
                 tag_name = tag_name.strip()
                 if tag_name:
@@ -249,10 +253,13 @@ def upload():
                     if not tag:
                         tag = Tag(name=tag_name)
                         db.session.add(tag)
+                        db.session.commit()  # Commit to get tag ID
                     
-                    new_image.tags.append(tag)
+                    # Check if this tag is already associated with the image
+                    if tag not in new_image.tags:
+                        new_image.tags.append(tag)
             
-            db.session.add(new_image)
+            # Commit the tag associations
             db.session.commit()
             
             flash(f'Image "{title}" uploaded successfully!', 'success')
