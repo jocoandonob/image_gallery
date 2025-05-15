@@ -303,4 +303,4 @@ with app.app_context():
         print("Try running create_db.py first to initialize the database")
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)

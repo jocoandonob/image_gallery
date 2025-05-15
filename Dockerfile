@@ -14,7 +14,7 @@ COPY . .
 RUN mkdir -p static/uploads
 
 # Make entrypoint script executable
-RUN chmod +x entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 # Expose port
 EXPOSE 5000
@@ -22,7 +22,7 @@ EXPOSE 5000
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
-ENV DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+ENV PYTHONUNBUFFERED=1
 
 # Run the application
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]

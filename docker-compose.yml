@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
     ports:
-      - "5433:5432"  # Changed from 5432:5432 to 5433:5432
+      - "5433:5432"  # Changed to 5433 to avoid conflicts with local PostgreSQL
     restart: always
 
 volumes:
