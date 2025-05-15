@@ -16,7 +16,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-testing')
 # Ensure instance folder exists
 os.makedirs('instance', exist_ok=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/gallery')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/postgres')
+print(f"Connecting to database: {app.config['SQLALCHEMY_DATABASE_URI']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
@@ -29,6 +30,20 @@ os.makedirs(uploads_dir, exist_ok=True)
 
 # Initialize database
 db = SQLAlchemy(app)
+
+# Check database connection
+def check_db_connection():
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute("SELECT 1")
+            print("Database connected successfully!")
+            return True
+    except Exception as e:
+        print(f"Database connection failed: {str(e)}")
+        return False
+
+# Verify database connection
+check_db_connection()
 
 # Initialize login manager
 login_manager = LoginManager()
@@ -262,7 +277,9 @@ def get_tags():
 # Create database tables
 with app.app_context():
     try:
+        # Create tables
         db.create_all()
+        print("Database tables created successfully")
         
         # Create a default admin user if no users exist
         if not User.query.first():
@@ -273,6 +290,7 @@ with app.app_context():
             print("Admin user created successfully")
     except Exception as e:
         print(f"Database initialization error: {str(e)}")
+        print("Try running create_db.py first to initialize the database")
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)

@@ -42,7 +42,7 @@ A responsive web application for managing and displaying images with user authen
 The application uses PostgreSQL. You can configure the database connection in the `.env` file:
 
 ```
-DATABASE_URL=postgresql://username:password@localhost:5432/gallery
+DATABASE_URL=postgresql://username:password@localhost:5432/postgres
 ```
 
 ## Default Login

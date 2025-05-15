@@ -25,3 +25,25 @@ werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'upload
 =========
 use postgreSQL instead of SQLite
 
+========
+ModuleNotFoundError: No module named 'psycopg2'
+
+========
+add console DB connected if connected.
+
+========
+
+Db failed.
+
+name: postgres
+host name/address: localhost
+port: 5432
+database: postgres
+username: postgres
+password: postgres
+
+========
+
+move everything from SQLite to PostgreSQL.
+all data should store in PostgreSQL includes user, tags, images
+And remove SQLite.
