@@ -12,6 +12,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - SECRET_KEY=your-secure-secret-key-here
+      - S3_BUCKET=winston-flask-q
+      - S3_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     restart: always
 
   db:

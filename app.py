@@ -26,12 +26,23 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 # S3 Configuration
-app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET', 'your-bucket-name')
+app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET', 'winston-flask-q')
 app.config['S3_REGION'] = os.environ.get('S3_REGION', 'us-east-1')
 app.config['S3_URL_EXPIRATION'] = int(os.environ.get('S3_URL_EXPIRATION', 3600))  # 1 hour
+app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('AWS_ACCESS_KEY_ID')
+app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
-# Initialize S3 client - uses IAM role credentials automatically when deployed
-s3_client = boto3.client('s3', region_name=app.config['S3_REGION'])
+# Initialize S3 client with explicit credentials if provided
+if app.config['AWS_ACCESS_KEY_ID'] and app.config['AWS_SECRET_ACCESS_KEY']:
+    s3_client = boto3.client(
+        's3',
+        region_name=app.config['S3_REGION'],
+        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+    )
+else:
+    # Fall back to IAM role or AWS credentials file
+    s3_client = boto3.client('s3', region_name=app.config['S3_REGION'])
 
 # Function to generate pre-signed URL for S3 objects
 def get_presigned_url(object_name, expiration=3600):
@@ -77,7 +88,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'  # Explicitly set table name
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)  # Increased from 128 to 255
     images = db.relationship('Image', backref='owner', lazy=True)
 
     def set_password(self, password):
@@ -276,6 +287,10 @@ def upload():
                 
             description = request.form.get('description', '')
             category_id = request.form.get('category')  # Now getting category_id directly
+            if not category_id:
+                flash('Category is required', 'danger')
+                return redirect(request.url)
+                
             tag_names = request.form.get('tags', '').split(',')
             
             # Create new image record
