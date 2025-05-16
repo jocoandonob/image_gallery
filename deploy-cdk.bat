@@ -1,0 +1,3 @@
+@echo off
+echo Deploying CDK stack to AWS...
+cdk deploy --profile default

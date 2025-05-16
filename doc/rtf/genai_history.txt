@@ -1,1 +1,47 @@
 =version 4=
+
+Use Python AWS CDK code to provision infrastructure for:
+
+Using AWS IAM roles and security best practice to allow access between ECS, RDS, and S3
+
+===========
+
+Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json'.
+
+
+===========
+
+jsii.errors.JavaScriptError: 
+  @jsii/kernel.RuntimeError: ValidationError: Don't know default protocol for port: 5000; please supply a protocol
+      at Kernel._Kernel_ensureSync (C:\Users\chris\AppData\Local\Temp\tmp8_mmjkya\lib\program.js:927:23)
+      at Kernel.invoke (C:\Users\chris\AppData\Local\Temp\tmp8_mmjkya\lib\program.js:294:102)
+      at KernelHost.processRequest (C:\Users\chris\AppData\Local\Temp\tmp8_mmjkya\lib\program.js:15467:36)
+      at KernelHost.run (C:\Users\chris\AppData\Local\Temp\tmp8_mmjkya\lib\program.js:15427:22)
+      at Immediate._onImmediate (C:\Users\chris\AppData\Local\Temp\tmp8_mmjkya\lib\program.js:15428:46)
+      at process.processImmediate (node:internal/timers:478:21)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "F:\image_gallery\app_infrastructure.py", line 226, in <module>
+    ImageGalleryStack(app, "ImageGalleryStack", env=env)
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_runtime.py", line 118, in __call__
+    inst = super(JSIIMeta, cast(JSIIMeta, cls)).__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\app_infrastructure.py", line 192, in __init__
+    listener.add_targets(
+  File "F:\image_gallery\venv\Lib\site-packages\aws_cdk\aws_elasticloadbalancingv2\__init__.py", line 24016, in add_targets
+    return typing.cast("ApplicationTargetGroup", jsii.invoke(self, "addTargets", [id, props]))
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 149, in wrapped
+    return _recursize_dereference(kernel, fn(kernel, *args, **kwargs))
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 399, in invoke
+    response = self.provider.invoke(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\providers\process.py", line 380, in invoke
+    return self._process.send(request, InvokeResponse)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\providers\process.py", line 342, in send
+    raise RuntimeError(resp.error) from JavaScriptError(resp.stack)
+RuntimeError: ValidationError: Don't know default protocol for port: 5000; please supply a protocol
