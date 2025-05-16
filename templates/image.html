@@ -22,6 +22,12 @@
         <strong>Upload date:</strong> {{ image.upload_date.strftime('%B %d, %Y') }}
     </div>
     
+    {% if image.category %}
+    <div style="margin-bottom: 1rem;">
+        <strong>Category:</strong> {{ image.category.name }}
+    </div>
+    {% endif %}
+    
     <div>
         <strong>Tags:</strong>
         <div class="gallery-tags">

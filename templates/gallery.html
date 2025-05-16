@@ -5,15 +5,28 @@
 {% block content %}
 <div class="filter-container">
     <form action="{{ url_for('gallery') }}" method="get" class="search-form">
-        <input type="text" name="search" class="search-input" placeholder="Search images..." value="{{ request.args.get('search', '') }}">
-        <button type="submit" class="search-button">Search</button>
-    
-        <select name="tag" class="filter-select" onchange="this.form.submit()">
-            <option value="">All Tags</option>
-            {% for tag in all_tags %}
-                <option value="{{ tag.name }}" {% if request.args.get('tag') == tag.name %}selected{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
+        <div class="search-input-container">
+            <input type="text" name="search" class="search-input" placeholder="Search images..." value="{{ request.args.get('search', '') }}">
+        </div>
+        <div class="filter-select-container">
+            <select name="category" class="filter-select">
+                <option value="">All Categories</option>
+                {% for category in all_categories %}
+                    <option value="{{ category.id }}" {% if request.args.get('category')|string == category.id|string %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-select-container">
+            <select name="tag" class="filter-select">
+                <option value="">All Tags</option>
+                {% for tag in all_tags %}
+                    <option value="{{ tag.name }}" {% if request.args.get('tag') == tag.name %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="search-button-container">
+            <button type="submit" class="search-button">Search</button>
+        </div>
     </form>
 </div>
 
@@ -22,9 +35,18 @@
         {% for image in images %}
             <div class="gallery-item">
                 <img src="{{ image.get_url() }}" alt="{{ image.title }}" class="gallery-image">
+                {% if image.category %}
+                <div class="category-badge">{{ image.category.name }}</div>
+                {% endif %}
                 <div class="gallery-info">
                     <h3 class="gallery-title">{{ image.title }}</h3>
                     <p class="gallery-description">{{ image.description }}</p>
+                    {% if image.category %}
+                    <div class="gallery-category">
+                        <span class="category-label">Category:</span>
+                        <span class="category-value">{{ image.category.name }}</span>
+                    </div>
+                    {% endif %}
                     <div class="gallery-tags">
                         {% for tag in image.tags %}
                             <a href="{{ url_for('gallery', tag=tag.name) }}" class="gallery-tag">{{ tag.name }}</a>

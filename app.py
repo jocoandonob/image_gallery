@@ -92,6 +92,11 @@ image_tags = db.Table('image_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True)
 )
 
+class Category(db.Model):
+    __tablename__ = 'categories'  # Explicitly set table name
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
 class Image(db.Model):
     __tablename__ = 'images'  # Explicitly set table name
     id = db.Column(db.Integer, primary_key=True)
@@ -100,6 +105,8 @@ class Image(db.Model):
     description = db.Column(db.Text)
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    category = db.relationship('Category', backref='images')
     tags = db.relationship('Tag', secondary=image_tags, lazy='subquery',
                            backref=db.backref('images', lazy=True))
     
@@ -184,6 +191,7 @@ def logout():
 @login_required
 def gallery():
     tag_filter = request.args.get('tag')
+    category_filter = request.args.get('category')
     search_query = request.args.get('search')
     
     # Base query
@@ -195,6 +203,10 @@ def gallery():
         if tag:
             query = query.filter(Image.tags.contains(tag))
     
+    if category_filter and category_filter.strip():
+        # Filter by category ID
+        query = query.filter(Image.category_id == category_filter)
+    
     if search_query and search_query.strip():
         query = query.filter(
             (Image.title.ilike(f'%{search_query}%')) | 
@@ -204,14 +216,21 @@ def gallery():
     # Get all images with filters applied
     images = query.order_by(Image.upload_date.desc()).all()
     
-    # Get all tags for the filter dropdown
+    # Get all tags and categories for the filter dropdowns
     all_tags = Tag.query.order_by(Tag.name).all()
+    all_categories = Category.query.order_by(Category.name).all()
     
-    return render_template('gallery.html', images=images, all_tags=all_tags)
+    return render_template('gallery.html', 
+                          images=images, 
+                          all_tags=all_tags,
+                          all_categories=all_categories)
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
+    # Get all categories for the form
+    categories = Category.query.order_by(Category.name).all()
+    
     if request.method == 'POST':
         try:
             # Check if the post request has the file part
@@ -256,6 +275,7 @@ def upload():
                 return redirect(request.url)
                 
             description = request.form.get('description', '')
+            category_id = request.form.get('category')  # Now getting category_id directly
             tag_names = request.form.get('tags', '').split(',')
             
             # Create new image record
@@ -263,7 +283,8 @@ def upload():
                 filename=unique_filename,  # Store S3 object key
                 title=title,
                 description=description,
-                user_id=current_user.id
+                user_id=current_user.id,
+                category_id=category_id
             )
             
             # Add and commit the image first to get an ID
@@ -296,7 +317,7 @@ def upload():
             flash(f'Error uploading image: {str(e)}', 'danger')
             return redirect(request.url)
     
-    return render_template('upload.html')
+    return render_template('upload.html', categories=categories)
 
 @app.route('/image/<int:image_id>')
 @login_required
@@ -310,12 +331,39 @@ def get_tags():
     tags = Tag.query.order_by(Tag.name).all()
     return jsonify([{'id': tag.id, 'name': tag.name} for tag in tags])
 
+@app.route('/categories', methods=['GET', 'POST'])
+@login_required
+def categories():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        if name:
+            # Check if category already exists
+            existing = Category.query.filter_by(name=name).first()
+            if existing:
+                flash('Category already exists', 'danger')
+            else:
+                category = Category(name=name)
+                db.session.add(category)
+                db.session.commit()
+                flash('Category added successfully!', 'success')
+    
+    categories = Category.query.order_by(Category.name).all()
+    return render_template('categories.html', categories=categories)
+
 # Create database tables
 with app.app_context():
     try:
         # Create tables
         db.create_all()
         print("Database tables created successfully")
+        
+        # Create default categories if none exist
+        if not Category.query.first():
+            default_categories = ['Nature', 'Architecture', 'People', 'Animals', 'Travel', 'Food', 'Art', 'Other']
+            for cat_name in default_categories:
+                db.session.add(Category(name=cat_name))
+            db.session.commit()
+            print("Default categories created")
         
         # Create a default admin user if no users exist
         if not User.query.first():

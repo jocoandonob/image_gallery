@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Categories - Image Gallery{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Manage Categories</h2>
+    
+    <form method="POST" action="{{ url_for('categories') }}">
+        <div class="form-group">
+            <label for="name" class="form-label">New Category</label>
+            <div class="input-group">
+                <input type="text" id="name" name="name" class="form-control" required>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </form>
+    
+    <h3 class="mt-4">Existing Categories</h3>
+    <ul class="list-group">
+        {% for category in categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ category.name }}
+                <span class="badge bg-primary rounded-pill">{{ category.images|length }}</span>
+            </li>
+        {% else %}
+            <li class="list-group-item">No categories found</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

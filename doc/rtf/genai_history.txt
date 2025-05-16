@@ -1,20 +1,114 @@
+All tags should be next line when mobile screen. so make the responsive working
 
-Images should be stored in AWS S3 and accessed using IAM role of the application (pre-signed URLs). configure it
+===============
+add you generated code to my project.
+
+===============
+
+all tags select button still not working when mobile responsive. 
+It should move next line to avoid broken UI issue.
+
+===============
+add category section when uploading image -
 
 
-=============
+===============
 
-well done, but insert you generated code to my project directly
+insert generated code to my project.
 
-=============
+===============
+
+category should be textinput, not select
 
 
-Create an S3 bucket in my AWS account, name is winston-flask-q
+===============
+insert generated code to my project.
+
+===============
+
+filter by category is not working, search button should move to right end. if user click the search button, search should work includes category. fix it.
+
+=====
+insert generated code to my project.
 
 
-=============
+=======
 
-  File "F:\image_gallery\app.py", line 276
-    if tag_name:name:
-                     ^
-SyntaxError: invalid syntax
+display category with look like caption as red bavckground in each item of gallery.
+
+don't make the space in one row - search filter line. make it beautiful a little.
+=======
+insert generated code to my project.
+=======
+filter by category is never working. and need to display category in gallery item.
+=======
+
+
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column images.category_id does not exist
+LINE 1: ...es_upload_date, images.user_id AS images_user_id, images.cat...
+                                                             ^
+
+[SQL: SELECT images.id AS images_id, images.filename AS images_filename, images.title AS images_title, images.description AS images_description, images.upload_date AS images_upload_date, images.user_id AS images_user_id, images.category_id AS images_category_id 
+FROM images ORDER BY images.upload_date DESC]
+
+=====================
+
+when uploading image, category section should be select box.
+there are categories table in db.
+fix it
+
+==========
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============
+Use Python AWS CDK code to provision infrastructure for:
+
+Using AWS IAM roles and security best practice to allow access between ECS, RDS, and S3
+
+===============
+
+ModuleNotFoundError: No module named 'aws_cdk'
+
+===============
+
+ERROR: Could not find a version that satisfies the requirement aws-cdk>=2.0.0 (from versions: none)
+ERROR: No matching distribution found for aws-cdk>=2.0.0
+
+===============
+
+ModuleNotFoundError: No module named 'aws_cdk'
+
+===============
