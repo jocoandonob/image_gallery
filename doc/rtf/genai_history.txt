@@ -45,3 +45,49 @@ Traceback (most recent call last):
   File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\providers\process.py", line 342, in send
     raise RuntimeError(resp.error) from JavaScriptError(resp.stack)
 RuntimeError: ValidationError: Don't know default protocol for port: 5000; please supply a protocol
+
+=================================
+
+
+Traceback (most recent call last):
+  File "F:\image_gallery\app_infrastructure.py", line 228, in <module>
+    app.synth()
+  File "F:\image_gallery\venv\Lib\site-packages\aws_cdk\__init__.py", line 23049, in synth
+    return typing.cast(_CloudAssembly_c693643e, jsii.invoke(self, "synth", [options]))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 149, in wrapped
+    return _recursize_dereference(kernel, fn(kernel, *args, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 139, in _recursize_dereference
+    return _reference_map.resolve_reference(kernel, d)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_reference_map.py", line 131, in resolve
+    raise ValueError(f"Unknown type: {class_fqn}")
+ValueError: Unknown type: aws-cdk-lib.cx_api.CloudAssembly
+python app_infrastructure.py: Subprocess exited with error 1
+
+===================================
+
+apply these changes to my project.
+
+
+===================================
+Error during synthesis: Unknown type: aws-cdk-lib.cx_api.CloudAssembly
+Traceback (most recent call last):
+  File "F:\image_gallery\app_infrastructure.py", line 229, in <module>
+    assembly = app.synth()
+               ^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\aws_cdk\__init__.py", line 23049, in synth
+    return typing.cast(_CloudAssembly_c693643e, jsii.invoke(self, "synth", [options]))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 149, in wrapped
+    return _recursize_dereference(kernel, fn(kernel, *args, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_kernel\__init__.py", line 139, in _recursize_dereference
+    return _reference_map.resolve_reference(kernel, d)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\image_gallery\venv\Lib\site-packages\jsii\_reference_map.py", line 131, in resolve
+    raise ValueError(f"Unknown type: {class_fqn}")
+ValueError: Unknown type: aws-cdk-lib.cx_api.CloudAssembly
+
+==================================

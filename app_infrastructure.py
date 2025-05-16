@@ -221,8 +221,14 @@ class ImageGalleryStack(Stack):
 
 app = cdk.App()
 env = cdk.Environment(
-    account=app.node.try_get_context('account') or '123456789012',  # Replace with your AWS account ID
+    account=app.node.try_get_context('account') or '040170486841',  # Your AWS account ID
     region=app.node.try_get_context('region') or 'us-east-1'
 )
 ImageGalleryStack(app, "ImageGalleryStack", env=env)
-app.synth()
+try:
+    assembly = app.synth()
+    print(f"Assembly directory: {assembly.directory}")
+except Exception as e:
+    print(f"Error during synthesis: {str(e)}")
+    import traceback
+    traceback.print_exc()
