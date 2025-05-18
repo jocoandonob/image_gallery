@@ -125,14 +125,23 @@ class ImageGalleryStack(Stack):
             memory_limit_mib=512
         )
 
+        # Create ECR repository for the application
+        repository = ecr.Repository(
+            self, "ImageGalleryRepo",
+            repository_name="image-gallery-app",
+            removal_policy=cdk.RemovalPolicy.RETAIN,
+        )
+        
         # Add container to task definition
         container = task_definition.add_container(
             "ImageGalleryApp",
-            image=ecs.ContainerImage.from_registry("amazon/amazon-ecs-sample"),
+            # Use the ECR repository - you'll need to build and push your image to this repo
+            image=ecs.ContainerImage.from_ecr_repository(repository),
             logging=ecs.LogDrivers.aws_logs(stream_prefix="image-gallery"),
             environment={
                 "S3_BUCKET": image_bucket.bucket_name,
-                "DB_SECRET_ARN": db_instance.secret.secret_arn
+                "DB_SECRET_ARN": db_instance.secret.secret_arn,
+                "AWS_REGION": self.region
             }
         )
 

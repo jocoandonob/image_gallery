@@ -13,7 +13,8 @@ COPY . .
 # Create upload directory
 RUN mkdir -p static/uploads
 
-# Make entrypoint script executable
+# Create entrypoint script
+COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
 # Expose port

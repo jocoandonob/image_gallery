@@ -91,3 +91,21 @@ Traceback (most recent call last):
 ValueError: Unknown type: aws-cdk-lib.cx_api.CloudAssembly
 
 ==================================
+
+current credentials could not be used to assume 'arn:aws:iam::040170486841:role/cdk-hnb659fds-lookup-role-040170486841-us-east-1', but are for the right account. Proceeding anyway.
+
+
+=====
+
+Did you create postgreSQL database in AWS RDS?
+
+postgresql://postgres:postgres @localhost:5432/postgres
+
+=========
+
+give me updated the database url in AWS RDS, so I can connect it in my local.
+this is my local url = postgresql://postgres:postgres @localhost:5432/postgres
+
+=========
+
+update docker file
