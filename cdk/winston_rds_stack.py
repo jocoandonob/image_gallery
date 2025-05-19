@@ -3,11 +3,11 @@ from aws_cdk import Stack, aws_ec2 as ec2, aws_rds as rds
 from constructs import Construct
 
 class WinstonRdsStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, vpc_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
-        # Import VPC
-        self.vpc = ec2.Vpc.from_lookup(self, "ImportedVpc", vpc_id=vpc_id)
+        # Use VPC directly
+        self.vpc = vpc
         
         # Create security group
         self.db_security_group = ec2.SecurityGroup(

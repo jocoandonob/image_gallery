@@ -14,21 +14,16 @@ vpc_s3_stack = WinstonVpcS3Stack(app, "WinstonGalleryVpcS3Stack", env=env)
 # Deploy ECR
 ecr_stack = WinstonEcrStack(app, "WinstonGalleryEcrStack", env=env)
 
-# Get outputs from previous stacks
-vpc_id = vpc_s3_stack.vpc.vpc_id
-bucket_name = vpc_s3_stack.image_bucket.bucket_name
-repository_uri = ecr_stack.repository.repository_uri
-
-# Deploy RDS with VPC from vpc_s3_stack
+# Deploy RDS with VPC reference
 rds_stack = WinstonRdsStack(app, "WinstonGalleryRdsStack", 
-                           vpc_id=vpc_id,
+                           vpc=vpc_s3_stack.vpc,  # Pass the VPC object directly
                            env=env)
 
 # Deploy ECS and ALB
 ecs_alb_stack = WinstonEcsAlbStack(app, "WinstonGalleryEcsAlbStack",
-                                  vpc_id=vpc_id,
-                                  repository_uri=repository_uri,
-                                  bucket_name=bucket_name,
+                                  vpc=vpc_s3_stack.vpc,  # Pass the VPC object directly
+                                  repository_uri=ecr_stack.repository.repository_uri,
+                                  bucket_name=vpc_s3_stack.image_bucket.bucket_name,
                                   db_secret_arn=rds_stack.db_instance.secret.secret_arn,
                                   env=env)
 

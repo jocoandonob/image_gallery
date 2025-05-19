@@ -3,11 +3,11 @@ from aws_cdk import Stack, aws_ec2 as ec2, aws_ecs as ecs, aws_iam as iam, aws_e
 from constructs import Construct
 
 class WinstonEcsAlbStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, vpc_id: str, repository_uri: str, bucket_name: str, db_secret_arn: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, vpc, repository_uri: str, bucket_name: str, db_secret_arn: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
-        # Import VPC
-        self.vpc = ec2.Vpc.from_lookup(self, "ImportedVpc", vpc_id=vpc_id)
+        # Use VPC directly
+        self.vpc = vpc
         
         # Create ECS cluster
         self.cluster = ecs.Cluster(self, "WinstonGalleryCluster", vpc=self.vpc)
