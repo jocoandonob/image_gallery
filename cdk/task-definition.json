@@ -1,0 +1,30 @@
+{
+  "family": "winston-gallery-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::040170486841:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "winston-gallery-container",
+      "image": "040170486841.dkr.ecr.us-east-1.amazonaws.com/winston-gallery:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "hostPort": 5000,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/winston-gallery",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
+}

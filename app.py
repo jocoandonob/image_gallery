@@ -1,5 +1,7 @@
+
 import os
 import boto3
+import json
 from botocore.exceptions import ClientError
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -15,34 +17,25 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-testing')
-# Ensure instance folder exists
-os.makedirs('instance', exist_ok=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/postgres')
-print(f"Connecting to database: {app.config['SQLALCHEMY_DATABASE_URI']}")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'winston-gallery-secure-key-2025')
+
+# Database Configuration - Use AWS RDS
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 
+    'postgresql://postgres:unXcvu24cb7Y8yDV-Zicnko_QDLqP7@winston-public-1747647416.cpihf2p85fkq.us-east-1.rds.amazonaws.com:5432/winstongallery'
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# S3 Configuration
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-
-# S3 Configuration
-app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET', 'winston-flask-q')
+app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET', 'winstongalleryvpcs3stack-winstonbucketa8d7d211-od7vfmty6wdu')
 app.config['S3_REGION'] = os.environ.get('S3_REGION', 'us-east-1')
 app.config['S3_URL_EXPIRATION'] = int(os.environ.get('S3_URL_EXPIRATION', 3600))  # 1 hour
-app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('AWS_ACCESS_KEY_ID')
-app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
-# Initialize S3 client with explicit credentials if provided
-if app.config['AWS_ACCESS_KEY_ID'] and app.config['AWS_SECRET_ACCESS_KEY']:
-    s3_client = boto3.client(
-        's3',
-        region_name=app.config['S3_REGION'],
-        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
-    )
-else:
-    # Fall back to IAM role or AWS credentials file
-    s3_client = boto3.client('s3', region_name=app.config['S3_REGION'])
+# Initialize S3 client
+s3_client = boto3.client('s3', region_name=app.config['S3_REGION'])
 
 # Function to generate pre-signed URL for S3 objects
 def get_presigned_url(object_name, expiration=3600):
@@ -56,27 +49,8 @@ def get_presigned_url(object_name, expiration=3600):
         return None
     return response
 
-# Ensure upload directory exists with absolute path
-current_dir = os.path.abspath(os.path.dirname(__file__))
-uploads_dir = os.path.join(current_dir, 'static', 'uploads')
-os.makedirs(uploads_dir, exist_ok=True)
-
 # Initialize database
 db = SQLAlchemy(app)
-
-# Check database connection
-def check_db_connection():
-    try:
-        with db.engine.connect() as conn:
-            result = conn.execute("SELECT 1")
-            print("Database connected successfully!")
-            return True
-    except Exception as e:
-        print(f"Database connection failed: {str(e)}")
-        return False
-
-# Verify database connection
-check_db_connection()
 
 # Initialize login manager
 login_manager = LoginManager()
@@ -85,10 +59,10 @@ login_manager.login_view = 'login'
 
 # Define models
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'  # Explicitly set table name
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)  # Increased from 128 to 255
+    password_hash = db.Column(db.String(255), nullable=False)
     images = db.relationship('Image', backref='owner', lazy=True)
 
     def set_password(self, password):
@@ -104,12 +78,12 @@ image_tags = db.Table('image_tags',
 )
 
 class Category(db.Model):
-    __tablename__ = 'categories'  # Explicitly set table name
+    __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
 class Image(db.Model):
-    __tablename__ = 'images'  # Explicitly set table name
+    __tablename__ = 'images'
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)  # S3 object key
     title = db.Column(db.String(100), nullable=False)
@@ -126,7 +100,7 @@ class Image(db.Model):
         return get_presigned_url(self.filename, app.config['S3_URL_EXPIRATION'])
 
 class Tag(db.Model):
-    __tablename__ = 'tags'  # Explicitly set table name
+    __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 

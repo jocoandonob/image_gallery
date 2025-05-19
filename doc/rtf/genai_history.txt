@@ -109,3 +109,74 @@ this is my local url = postgresql://postgres:postgres @localhost:5432/postgres
 =========
 
 update docker file
+
+=========
+Load Balancer in front of ECS
+
+=========
+AWS RDS for PostgreSQL database, AWS S3 bucket for the images
+
+=========
+Use a VPC with public subnets and private subnets
+
+=========
+AWS SecretsManager should be used to store passwords and secrets
+
+=========
+Error during synthesis: Unknown type: aws-cdk-lib.cx_api.CloudAssembly
+
+=========
+[Error at /ImageGalleryStack] Could not assume role in target account using current credentials (which are for account 040170486841) User: arn:aws:iam::040170486841:user/01a79334f57e8c2ab2 is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::01a79334f57e8c2ab2:role/cdk-hnb659fds-lookup-role-01a79334f57e8c2ab2-us-east-1 . Please make sure that this role exists in the account. If it doesn't exist, (re)-bootstrap the environment with the right '--trust', using the latest version of the CDK CLI.
+=========
+apply these changes to my project.
+
+
+=========
+current credentials could not be used to assume 'arn:aws:iam::040170486841:role/cdk-hnb659fds-lookup-role-040170486841-us-east-1', but are for the right account. Proceeding anyway.
+
+=========
+Did you create postgreSQL database in AWS RDS?
+
+postgresql://postgres:postgres@localhost:5432/postgres
+=========
+there are so many things to push AWS.
+So I want to separate them and push one by one. so can avoid the conflict and issues.
+
+first of all, I want to give me the steps how to do it.
+how to push each step.
+=========
+I failed previos deploy, can't be removed. so to avoid conflicting name. instead of ImageGallery, I want to change the name with WinstonGallery.
+Please change all the name.
+=========
+remove old unnecessary codes for imageGallery, because we only need WinstonGallary
+=========
+all cdk files move to cdk folder
+=========
+apply this codes to my project
+=========
+great. I want to deploy one by one. give me guide
+
+=========
+cdk bootstrap aws://040170486841/us-east-1
+this is failed. fix it.
+[Errno 2] No such file or directory
+=========
+
+venv\Lib\site-packages\jsii_kernel\providers\process.py", line 342, in send
+raise RuntimeError(resp.error) from JavaScriptError(resp.stack)
+RuntimeError: Error: All arguments to Vpc.fromLookup() must be concrete (no Tokens)
+=========
+apply these codes to my project
+=========
+okay, bootstrap got sucess.
+give me step how to deploy one by one again
+=========
+I only can find users table in AWS RDS DB, it is not like local. it should include some tables like local. what is wrong? how to fix?
+
+=========
+docker pushed to ecr successfully, last thing is for image to deploy to ecs fargate, give me step
+
+=========
+aws elbv2 create-load-balancer --name winston-gallery-alb --subnets "subnet-0eaaec969fd18bf0a", "subnet-0582cd7df3e788c78", "subnet-0e2a04e20a44e500a", "subnet-0b71c6b16e68d2619", "subnet-016cfbdf8456cce9d", "subnet-04959b3ab28342de7" --security-groups "sg-055ec7f52a86c3804"
+
+An error occurred (InvalidConfigurationRequest) when calling the CreateLoadBalancer operation: A load balancer cannot be attached to multiple subnets in the same Availability Zone
