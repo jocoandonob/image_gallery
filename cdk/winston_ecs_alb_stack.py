@@ -55,7 +55,20 @@ class WinstonEcsAlbStack(Stack):
             allow_all_outbound=True
         )
         
-        alb_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80), "Allow HTTP traffic")
+        # alb_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80), "Allow HTTP traffic")
+
+        # Allow inbound HTTP traffic only from specific IPs
+        alb_security_group.add_ingress_rule(
+            ec2.Peer.ipv4("136.158.50.185/32"),
+            ec2.Port.tcp(80),
+            "Allow HTTP traffic from 136.158.50.185"
+        )
+
+        alb_security_group.add_ingress_rule(
+            ec2.Peer.ipv4("3.96.41.45/32"),
+            ec2.Port.tcp(80),
+            "Allow HTTP traffic from 3.96.41.45"
+        )
         
         # Create task definition
         task_definition = ecs.FargateTaskDefinition(
@@ -106,8 +119,13 @@ class WinstonEcsAlbStack(Stack):
             port=5000,
             protocol=elbv2.ApplicationProtocol.HTTP,
             targets=[service],
-            health_check=elbv2.HealthCheck(path="/", interval=cdk.Duration.seconds(60), timeout=cdk.Duration.seconds(5))
+            health_check=elbv2.HealthCheck(
+                path="/ping",
+                interval=cdk.Duration.seconds(60),
+                timeout=cdk.Duration.seconds(5)
+            )
         )
+
         
         # Output
         cdk.CfnOutput(self, "LoadBalancerDNS", value=self.alb.load_balancer_dns_name)

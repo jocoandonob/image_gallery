@@ -119,6 +119,10 @@ def index():
         return redirect(url_for('gallery'))
     return render_template('index.html')
 
+@app.route('/ping')
+def ping():
+    return jsonify({"status": "ok"}), 200
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:

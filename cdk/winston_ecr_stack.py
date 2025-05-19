@@ -9,7 +9,7 @@ class WinstonEcrStack(Stack):
         # Create ECR repository
         self.repository = ecr.Repository(
             self, "WinstonGalleryRepo",
-            repository_name="winston-gallery-app",
+            repository_name="winston-gallery",
             removal_policy=cdk.RemovalPolicy.RETAIN
         )
         

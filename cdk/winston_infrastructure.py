@@ -128,7 +128,7 @@ class WinstonGalleryStack(Stack):
         # Create ECR repository for the application
         repository = ecr.Repository(
             self, "WinstonGalleryRepo",
-            repository_name="winston-gallery-app",
+            repository_name="winston-gallery",
             removal_policy=cdk.RemovalPolicy.RETAIN,
         )
         
@@ -160,11 +160,17 @@ class WinstonGalleryStack(Stack):
             allow_all_outbound=True
         )
         
-        # Allow inbound HTTP traffic to ALB
+        # Allow inbound HTTP traffic only from specific IPs
         alb_security_group.add_ingress_rule(
-            ec2.Peer.any_ipv4(),
+            ec2.Peer.ipv4("136.158.50.185/32"),
             ec2.Port.tcp(80),
-            "Allow HTTP traffic"
+            "Allow HTTP traffic from 136.158.50.185"
+        )
+
+        alb_security_group.add_ingress_rule(
+            ec2.Peer.ipv4("3.96.41.45/32"),
+            ec2.Port.tcp(80),
+            "Allow HTTP traffic from 3.96.41.45"
         )
         
         # Create Application Load Balancer

@@ -180,3 +180,16 @@ docker pushed to ecr successfully, last thing is for image to deploy to ecs farg
 aws elbv2 create-load-balancer --name winston-gallery-alb --subnets "subnet-0eaaec969fd18bf0a", "subnet-0582cd7df3e788c78", "subnet-0e2a04e20a44e500a", "subnet-0b71c6b16e68d2619", "subnet-016cfbdf8456cce9d", "subnet-04959b3ab28342de7" --security-groups "sg-055ec7f52a86c3804"
 
 An error occurred (InvalidConfigurationRequest) when calling the CreateLoadBalancer operation: A load balancer cannot be attached to multiple subnets in the same Availability Zone
+
+=========
+
+The application should be accessible on the internet, but limit access only to these two IP addresses: 1) your own IP, and 2) 3.96.41.45
+
+=========
+
+    alb_security_group.add_ingress_rule(
+        ec2.Peer.any_ipv4(),
+        ec2.Port.tcp(80),
+        "Allow HTTP traffic"
+    )
+136.158.50.185, 3.96.41.45 just allow these ip address
