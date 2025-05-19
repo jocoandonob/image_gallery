@@ -11,7 +11,7 @@ services:
       - db
     environment:
       # For local development with local PostgreSQL
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/winstongallery
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@winston-public-1747647416.cpihf2p85fkq.us-east-1.rds.amazonaws.com:5432/winstongallery
       - SECRET_KEY=winston-gallery-secure-key-2025
       # For AWS resources
       - S3_BUCKET=${S3_BUCKET}

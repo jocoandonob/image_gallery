@@ -3,7 +3,10 @@ import json
 import psycopg2
 
 def test_rds_connection():
-    # Get the DB secret ARN from CloudFormation output
+    # Connect directly to the new public RDS instance
+    host = "winston-public-1747647416.cpihf2p85fkq.us-east-1.rds.amazonaws.com"
+    
+    # Get the secret from the original RDS instance (credentials should be the same)
     cfn = boto3.client('cloudformation')
     response = cfn.describe_stacks(StackName='WinstonGalleryRdsStack')
     secret_arn = None
@@ -24,12 +27,12 @@ def test_rds_connection():
     response = sm.get_secret_value(SecretId=secret_arn)
     secret = json.loads(response['SecretString'])
     
-    print(f"Retrieved secret for host: {secret['host']}")
+    print(f"Using credentials from secret for host: {host}")
     
     # Connect to the database
     try:
         conn = psycopg2.connect(
-            host=secret['host'],
+            host=host,
             user=secret['username'],
             password=secret['password'],
             dbname=secret['dbname'],
@@ -41,6 +44,13 @@ def test_rds_connection():
         result = cursor.fetchone()
         
         print(f"Connection successful! Result: {result[0]}")
+
+        
+        print(f"host: {host}")
+        print(f"secret['username']: {secret['username']}")
+        print(f"secret['password']: {secret['password']}")
+        print(f"secret['dbname']: {secret['dbname']}")
+        print(f"secret['port']: {secret['port']}")
         
         # Create tables if they don't exist
         cursor.execute("""
