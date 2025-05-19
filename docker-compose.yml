@@ -10,12 +10,15 @@ services:
     depends_on:
       - db
     environment:
+      # For local development with local PostgreSQL
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - SECRET_KEY=your-secure-secret-key-here
-      - S3_BUCKET=winston-flask-q
+      # For AWS resources
+      - S3_BUCKET=${S3_BUCKET}
       - S3_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - DB_SECRET_ARN=${DB_SECRET_ARN}
     restart: always
 
   db:
