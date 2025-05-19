@@ -7,10 +7,10 @@ class WinstonEcsAlbStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         
         # Import VPC
-        vpc = ec2.Vpc.from_lookup(self, "ImportedVpc", vpc_id=vpc_id)
+        self.vpc = ec2.Vpc.from_lookup(self, "ImportedVpc", vpc_id=vpc_id)
         
         # Create ECS cluster
-        cluster = ecs.Cluster(self, "WinstonGalleryCluster", vpc=vpc)
+        self.cluster = ecs.Cluster(self, "WinstonGalleryCluster", vpc=self.vpc)
         
         # Create roles
         execution_role = iam.Role(
@@ -38,14 +38,14 @@ class WinstonEcsAlbStack(Stack):
         # Create security groups
         task_security_group = ec2.SecurityGroup(
             self, "TaskSecurityGroup",
-            vpc=vpc,
+            vpc=self.vpc,
             description="Security group for ECS tasks",
             allow_all_outbound=True
         )
         
         alb_security_group = ec2.SecurityGroup(
             self, "ALBSecurityGroup",
-            vpc=vpc,
+            vpc=self.vpc,
             description="Security group for ALB",
             allow_all_outbound=True
         )
@@ -75,20 +75,20 @@ class WinstonEcsAlbStack(Stack):
         container.add_port_mappings(ecs.PortMapping(container_port=5000))
         
         # Create ALB
-        alb = elbv2.ApplicationLoadBalancer(
+        self.alb = elbv2.ApplicationLoadBalancer(
             self, "WinstonGalleryALB",
-            vpc=vpc,
+            vpc=self.vpc,
             internet_facing=True,
             security_group=alb_security_group,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC)
         )
         
-        listener = alb.add_listener("HttpListener", port=80, open=True)
+        listener = self.alb.add_listener("HttpListener", port=80, open=True)
         
         # Create service
         service = ecs.FargateService(
             self, "Service",
-            cluster=cluster,
+            cluster=self.cluster,
             task_definition=task_definition,
             desired_count=2,
             security_groups=[task_security_group],
@@ -105,13 +105,4 @@ class WinstonEcsAlbStack(Stack):
         )
         
         # Output
-        cdk.CfnOutput(self, "LoadBalancerDNS", value=alb.load_balancer_dns_name)
-
-app = cdk.App()
-env = cdk.Environment(account='040170486841', region='us-east-1')
-vpc_id = app.node.try_get_context("vpc_id")
-repository_uri = app.node.try_get_context("repository_uri")
-bucket_name = app.node.try_get_context("bucket_name")
-db_secret_arn = app.node.try_get_context("db_secret_arn")
-WinstonEcsAlbStack(app, "WinstonGalleryEcsAlbStack", vpc_id=vpc_id, repository_uri=repository_uri, bucket_name=bucket_name, db_secret_arn=db_secret_arn, env=env)
-app.synth()
+        cdk.CfnOutput(self, "LoadBalancerDNS", value=self.alb.load_balancer_dns_name)

@@ -29,8 +29,3 @@ class WinstonVpcS3Stack(Stack):
         # Outputs
         cdk.CfnOutput(self, "VpcId", value=self.vpc.vpc_id)
         cdk.CfnOutput(self, "BucketName", value=self.image_bucket.bucket_name)
-
-app = cdk.App()
-env = cdk.Environment(account='040170486841', region='us-east-1')
-WinstonVpcS3Stack(app, "WinstonGalleryVpcS3Stack", env=env)
-app.synth()

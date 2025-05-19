@@ -15,8 +15,3 @@ class WinstonEcrStack(Stack):
         
         # Output
         cdk.CfnOutput(self, "RepositoryUri", value=self.repository.repository_uri)
-
-app = cdk.App()
-env = cdk.Environment(account='040170486841', region='us-east-1')
-WinstonEcrStack(app, "WinstonGalleryEcrStack", env=env)
-app.synth()
