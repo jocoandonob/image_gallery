@@ -11,8 +11,8 @@ services:
       - db
     environment:
       # For local development with local PostgreSQL
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-      - SECRET_KEY=your-secure-secret-key-here
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/winstongallery
+      - SECRET_KEY=winston-gallery-secure-key-2025
       # For AWS resources
       - S3_BUCKET=${S3_BUCKET}
       - S3_REGION=us-east-1
@@ -28,7 +28,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=winstongallery
     ports:
       - "5433:5432"  # Changed to 5433 to avoid conflicts with local PostgreSQL
     restart: always
