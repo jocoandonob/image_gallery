@@ -101,7 +101,7 @@ class WinstonEcsAlbStack(Stack):
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC)
         )
         
-        listener = self.alb.add_listener("HttpListener", port=80, open=True)
+        listener = self.alb.add_listener("HttpListener", port=80, open=False)
         
         # Create service
         service = ecs.FargateService(

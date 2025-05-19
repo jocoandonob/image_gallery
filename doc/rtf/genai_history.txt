@@ -193,3 +193,7 @@ The application should be accessible on the internet, but limit access only to t
         "Allow HTTP traffic"
     )
 136.158.50.185, 3.96.41.45 just allow these ip address
+
+=========
+but it is still accesssing with other ip address
+
