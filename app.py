@@ -1,4 +1,3 @@
-
 import os
 import boto3
 import json
@@ -17,13 +16,40 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'winston-gallery-secure-key-2025')
 
-# Database Configuration - Use AWS RDS
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 
-    'postgresql://postgres:unXcvu24cb7Y8yDV-Zicnko_QDLqP7@winston-public-1747647416.cpihf2p85fkq.us-east-1.rds.amazonaws.com:5432/winstongallery'
-)
+# Get secrets from AWS Secrets Manager
+def get_secret(secret_arn):
+    if not secret_arn:
+        return None
+    
+    try:
+        session = boto3.session.Session()
+        client = session.client(
+            service_name='secretsmanager',
+            region_name=os.environ.get('AWS_REGION', 'us-east-1')
+        )
+        response = client.get_secret_value(SecretId=secret_arn)
+        return json.loads(response['SecretString'])
+    except Exception as e:
+        print(f"Error retrieving secret: {str(e)}")
+        return None
+
+# Get database credentials from Secrets Manager
+db_secret_arn = os.environ.get('DB_SECRET_ARN')
+db_secret = get_secret(db_secret_arn)
+
+if db_secret:
+    # Use credentials from Secrets Manager
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'winston-gallery-secure-key-2025')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_secret['username']}:{db_secret['password']}@{db_secret['host']}:{db_secret['port']}/{db_secret['dbname']}"
+else:
+    # Fallback to environment variables
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'winston-gallery-secure-key-2025')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL', 
+        'postgresql://postgres:postgres@localhost:5432/winstongallery'
+    )
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # S3 Configuration
