@@ -11,13 +11,13 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-class ImageGalleryStack(Stack):
+class WinstonGalleryStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Create VPC with isolated subnets for RDS
         vpc = ec2.Vpc(
-            self, "ImageGalleryVPC",
+            self, "WinstonGalleryVPC",
             max_azs=2,
             subnet_configuration=[
                 ec2.SubnetConfiguration(
@@ -40,7 +40,7 @@ class ImageGalleryStack(Stack):
 
         # Create S3 bucket for image storage
         image_bucket = s3.Bucket(
-            self, "ImageBucket",
+            self, "WinstonBucket",
             encryption=s3.BucketEncryption.S3_MANAGED,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             enforce_ssl=True,
@@ -56,7 +56,7 @@ class ImageGalleryStack(Stack):
         )
 
         db_instance = rds.DatabaseInstance(
-            self, "ImageGalleryDB",
+            self, "WinstonGalleryDB",
             engine=rds.DatabaseInstanceEngine.postgres(
                 version=rds.PostgresEngineVersion.VER_14
             ),
@@ -73,13 +73,13 @@ class ImageGalleryStack(Stack):
             deletion_protection=True,
             storage_encrypted=True,
             multi_az=True,
-            database_name="imagegallery",
+            database_name="winstongallery",
             credentials=rds.Credentials.from_generated_secret("postgres")
         )
 
         # Create ECS cluster
         cluster = ecs.Cluster(
-            self, "ImageGalleryCluster",
+            self, "WinstonGalleryCluster",
             vpc=vpc
         )
 
@@ -127,17 +127,17 @@ class ImageGalleryStack(Stack):
 
         # Create ECR repository for the application
         repository = ecr.Repository(
-            self, "ImageGalleryRepo",
-            repository_name="image-gallery-app",
+            self, "WinstonGalleryRepo",
+            repository_name="winston-gallery-app",
             removal_policy=cdk.RemovalPolicy.RETAIN,
         )
         
         # Add container to task definition
         container = task_definition.add_container(
-            "ImageGalleryApp",
+            "WinstonGalleryApp",
             # Use the ECR repository - you'll need to build and push your image to this repo
             image=ecs.ContainerImage.from_ecr_repository(repository),
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="image-gallery"),
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="winston-gallery"),
             environment={
                 "S3_BUCKET": image_bucket.bucket_name,
                 "DB_SECRET_ARN": db_instance.secret.secret_arn,
@@ -169,7 +169,7 @@ class ImageGalleryStack(Stack):
         
         # Create Application Load Balancer
         alb = elbv2.ApplicationLoadBalancer(
-            self, "ImageGalleryALB",
+            self, "WinstonGalleryALB",
             vpc=vpc,
             internet_facing=True,
             security_group=alb_security_group,
@@ -233,7 +233,7 @@ env = cdk.Environment(
     account=app.node.try_get_context('account') or '040170486841',  # Your AWS account ID
     region=app.node.try_get_context('region') or 'us-east-1'
 )
-ImageGalleryStack(app, "ImageGalleryStack", env=env)
+WinstonGalleryStack(app, "WinstonGalleryStack", env=env)
 try:
     assembly = app.synth()
     print(f"Assembly directory: {assembly.directory}")

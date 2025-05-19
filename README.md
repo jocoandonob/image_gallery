@@ -1,79 +1,26 @@
-# Flask Image Gallery Application
+# Winston Gallery Application
 
-A responsive web application for managing and displaying images with user authentication.
+This application uses AWS infrastructure deployed with CDK to host an image gallery application.
 
-## Features
+## Infrastructure Components
 
-- User authentication (register, login, logout)
-- Image upload with title, description, and tags
-- Responsive masonry grid layout for image display
-- Filter images by tags
-- Search images by title or description
-- Image preview modal
-- Responsive design for all devices
+- **VPC** with public, private, and isolated subnets
+- **S3 Bucket** for storing images
+- **RDS PostgreSQL** database for metadata
+- **ECR Repository** for Docker images
+- **ECS Fargate** for running containers
+- **Application Load Balancer** for routing traffic
 
-## Technology Stack
+## Deployment Instructions
 
-- **Backend**: Python Flask
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **Frontend**: Vanilla JavaScript, HTML, and CSS
-- **Authentication**: Flask-Login
-- **Image Processing**: Pillow
+See [winston_deploy.md](winston_deploy.md) for step-by-step deployment instructions.
 
-## Installation
+## Files
 
-1. Clone the repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Set up PostgreSQL database:
-   ```
-   python create_db.py
-   ```
-4. Run the application:
-   ```
-   python app.py
-   ```
-5. Access the application at `http://localhost:5000`
-
-## Database Configuration
-
-The application uses PostgreSQL. You can configure the database connection in the `.env` file:
-
-```
-DATABASE_URL=postgresql://username:password@localhost:5432/postgres
-```
-
-## Default Login
-
-- Username: admin
-- Password: admin
-
-## Project Structure
-
-```
-image_gallery/
-├── app.py                 # Main Flask application
-├── create_db.py           # Database initialization script
-├── requirements.txt       # Python dependencies
-├── .env                   # Environment variables
-├── static/
-│   ├── css/
-│   │   └── style.css      # CSS styles
-│   ├── js/
-│   │   └── main.js        # JavaScript functionality
-│   └── uploads/           # Uploaded images
-└── templates/
-    ├── base.html          # Base template
-    ├── index.html         # Landing page
-    ├── login.html         # Login page
-    ├── register.html      # Registration page
-    ├── gallery.html       # Image gallery
-    ├── upload.html        # Image upload form
-    └── image.html         # Individual image view
-```
-
-## License
-
-This project is open source and available under the MIT License.
+- `winston_vpc_s3_stack.py` - VPC and S3 bucket infrastructure
+- `winston_ecr_stack.py` - ECR repository infrastructure
+- `winston_rds_stack.py` - RDS database infrastructure
+- `winston_ecs_alb_stack.py` - ECS and ALB infrastructure
+- `winston_infrastructure.py` - Complete infrastructure in a single stack (alternative)
+- `winston_build_push.bat` - Script to build and push Docker image
+- `winston_deploy.md` - Deployment guide

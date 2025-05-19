@@ -36,6 +36,13 @@ cdk.out/
 .cdk.staging/
 cdk-outputs.json
 
+# Old files (to be removed)
+app_infrastructure.py
+deploy-cdk.bat
+bootstrap-cdk.bat
+deploy-with-bootstrap.bat
+build-and-push.bat
+
 # IDE
 .idea/
 .vscode/

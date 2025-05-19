@@ -8,7 +8,7 @@ del temp.txt
 
 REM Set variables
 set AWS_REGION=us-east-1
-set ECR_REPO_NAME=image-gallery-app
+set ECR_REPO_NAME=winston-gallery-app
 set ECR_REPO_URI=%AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com/%ECR_REPO_NAME%
 
 echo AWS Account ID: %AWS_ACCOUNT_ID%
@@ -31,5 +31,5 @@ echo Pushing image to ECR...
 docker push %ECR_REPO_URI%:latest
 
 echo Image successfully built and pushed to ECR!
-echo You can now deploy your CDK stack with: deploy-cdk.bat
+echo You can now deploy your CDK stack with: winston_deploy.bat
 pause
